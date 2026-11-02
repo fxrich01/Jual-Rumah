@@ -1,15 +1,28 @@
-
 'use client'
-import { useState } from 'react'
-import Header from '@/components/Header'
-import Hero from '@/components/Header'
+import { useEffect, useState } from 'react'
 import { MostViewed, HowItWorks } from '@/components/Sections'
-
-function HeaderWrap({page,setPage}:{page:string,setPage:any}){ return null }
+import ListingGrid from '@/components/ListingGrid'
+import ListingDetail from '@/components/ListingDetail'
+import { fetchListings, type Listing } from '@/lib/listings'
 
 export default function Page(){
   const [page, setPage] = useState('home')
-  const [selected, setSelected] = useState<any>(null)
+  const [selected, setSelected] = useState<Listing | null>(null)
+  const [listings, setListings] = useState<Listing[] | null>(null)
+  const [listingsError, setListingsError] = useState(false)
+
+  useEffect(()=>{
+    let active = true
+    fetchListings()
+      .then(data => { if (active) setListings(data) })
+      .catch(() => { if (active) setListingsError(true) })
+    return () => { active = false }
+  }, [])
+
+  const openListing = (listing: Listing) => {
+    setSelected(listing)
+    setPage('detail')
+  }
 
   return (
     <main>
@@ -46,36 +59,9 @@ export default function Page(){
             </div>
           </div>
 
-          <section className="pt-28 pb-16 bg-white">
-            <div className="max-w-7xl mx-auto px-6 text-center">
-              <h2 className="text-3xl font-bold">Most Viewed</h2>
-              <p className="text-gray-400 text-sm mt-2">Discover a range of vacation homes worldwide.</p>
-              <div className="mt-10 grid md:grid-cols-3 gap-6 text-left">
-                {[
-                  {img:"/images/ocean-breeze.webp", name:"Ocean Breeze Villa", price:"€ 910.000,00"},
-                  {img:"/images/jakson-house.webp", name:"Jakson House", price:"€ 750.000,00"},
-                  {img:"/images/cliff-ocean.webp", name:"Lakeside Cottage", price:"€ 540.000,00"},
-                ].map(c=>(
-                  <div key={c.name} onClick={()=>setPage('detail')} className="rounded-[24px] border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.06)] overflow-hidden cursor-pointer hover:-translate-y-1 transition">
-                    <div className="h-[260px] overflow-hidden"><img src={c.img} className="w-full h-full object-cover"/></div>
-                    <div className="p-5"><div className="text-xs text-gray-400">4 beds • 2 baths • Villa</div><div className="mt-2 font-semibold">{c.name}</div><div className="mt-1 font-bold">{c.price}</div></div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
+          <MostViewed listings={listings} error={listingsError} onSelect={openListing}/>
 
-          <section className="py-16 bg-[#f7f9fb]">
-            <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-8">
-              {[
-                {n:"01", t:"Search Property", d:"Browse thousands of verified villas."},
-                {n:"02", t:"Book & Visit", d:"Schedule a visit or book securely."},
-                {n:"03", t:"Live Happy", d:"Move in and enjoy your new home."},
-              ].map(s=>(
-                <div key={s.n} className="bg-white rounded-[20px] p-8 shadow-sm"><div className="w-10 h-10 rounded-full bg-[#0a2540] text-white grid place-items-center font-bold text-sm">{s.n}</div><h3 className="mt-4 font-bold">{s.t}</h3><p className="text-sm text-gray-500 mt-2">{s.d}</p></div>
-              ))}
-            </div>
-          </section>
+          <HowItWorks/>
 
           <section className="py-20 max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
             <div className="rounded-[32px] overflow-hidden h-[400px] relative"><img src="/images/hero-villa.webp" className="w-full h-full object-cover"/><div className="absolute bottom-4 left-4 bg-white rounded-2xl p-4 shadow-xl"><div className="text-2xl font-bold">10k+</div><div className="text-xs text-gray-500">Properties</div></div></div>
@@ -89,24 +75,12 @@ export default function Page(){
           <h1 className="text-4xl font-bold">All Listings</h1>
           <div className="mt-8 grid lg:grid-cols-[260px_1fr] gap-8">
             <aside className="bg-white border rounded-2xl p-6 h-fit"><h3 className="font-bold">Filters</h3><div className="mt-4 space-y-4 text-sm text-gray-600"><div>Price: €0 - €1M</div><div>Typology: Villa, Cottage</div><div>Beds: 2,3,4+</div></div></aside>
-            <div className="grid md:grid-cols-3 gap-6">
-              {Array.from({length:9}).map((_,i)=>{
-                const imgs = ["/images/ocean-breeze.webp","/images/jakson-house.webp","/images/cliff-ocean.webp","/images/hero-villa.webp"]
-                return <div key={i} onClick={()=>setPage('detail')} className="rounded-2xl border overflow-hidden cursor-pointer"><div className="h-56"><img src={imgs[i%4]} className="w-full h-full object-cover"/></div><div className="p-4"><div className="font-semibold">Villa {i+1}</div><div className="text-sm font-bold mt-1">€ {(500+i*50)}.000,00</div></div></div>
-              })}
-            </div>
+            <ListingGrid listings={listings} error={listingsError} onSelect={openListing}/>
           </div>
         </div>
       )}
 
-      {page==='detail' && (
-        <div className="pt-28 max-w-7xl mx-auto px-6 pb-20">
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2"><div className="h-[420px] rounded-[24px] overflow-hidden"><img src="/images/hero-villa.webp" className="w-full h-full object-cover"/></div><div className="grid grid-cols-3 gap-4 mt-4">{["/images/ocean-breeze.webp","/images/jakson-house.webp","/images/cliff-ocean.webp"].map(src=><div key={src} className="h-28 rounded-xl overflow-hidden"><img src={src} className="w-full h-full object-cover"/></div>)}</div></div>
-            <div><div className="bg-white border rounded-2xl p-6 shadow-sm"><div className="text-3xl font-bold">€ 950.000,00</div><div className="text-sm text-gray-500">123 Street, Andalucía</div><button className="mt-6 w-full bg-[#0a2540] text-white py-3 rounded-full">Book Visit</button></div></div>
-          </div>
-        </div>
-      )}
+      {page==='detail' && selected && <ListingDetail listing={selected}/>}
 
       {page==='about' && (
         <div className="pt-28 max-w-7xl mx-auto px-6 pb-20"><h1 className="text-4xl font-bold">About Rent H&U</h1><p className="mt-4 text-gray-600 max-w-2xl">We are a premium rental platform inspired by Spanish villas. Our mission is to make finding your new home simple and luxurious.</p></div>

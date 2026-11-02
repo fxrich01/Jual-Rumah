@@ -1,27 +1,20 @@
+import ListingGrid from '@/components/ListingGrid'
+import type { Listing } from '@/lib/listings'
 
-const cards = [
-  {img:"/images/ocean-breeze.webp", name:"Ocean Breeze Villa", price:"€ 910.000,00"},
-  {img:"/images/jakson-house.webp", name:"Jakson House", price:"€ 750.000,00"},
-  {img:"/images/cliff-ocean.webp", name:"Lakeside Cottage", price:"€ 540.000,00"},
-]
-export function MostViewed({ onDetail }:{ onDetail:()=>void }){
+export function MostViewed({ listings, error, onSelect }: { listings: Listing[] | null, error: boolean, onSelect: (listing: Listing) => void }){
   return (
     <section className="pt-28 pb-16 bg-white">
       <div className="max-w-7xl mx-auto px-6 text-center">
         <h2 className="text-3xl font-bold">Most Viewed</h2>
-        <p className="text-gray-400 text-sm mt-2">Discover a range of vacation homes worldwide. Book securely and get expert support.</p>
-        <div className="mt-10 grid md:grid-cols-3 gap-6 text-left">
-          {cards.map(c=>(
-            <div key={c.name} onClick={onDetail} className="rounded-[24px] border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.06)] overflow-hidden cursor-pointer hover:-translate-y-1 transition">
-              <div className="h-[260px] overflow-hidden"><img src={c.img} className="w-full h-full object-cover"/></div>
-              <div className="p-5"><div className="text-xs text-gray-400">123 Main Street, Anywhere, CA 12345 • 4 🛏 2 🛁</div><div className="mt-2 font-semibold">{c.name}</div><div className="mt-1 font-bold">{c.price}</div></div>
-            </div>
-          ))}
+        <p className="text-gray-500 text-sm mt-2">Discover a range of vacation homes worldwide.</p>
+        <div className="mt-10">
+          <ListingGrid listings={listings?.slice(0, 3) ?? null} error={error} onSelect={onSelect}/>
         </div>
       </div>
     </section>
   )
 }
+
 export function HowItWorks(){
   return (
     <section className="py-16 bg-[#f7f9fb]">
