@@ -4,6 +4,8 @@ import Header from '@/components/Header'
 import { MostViewed, HowItWorks } from '@/components/Sections'
 import ListingGrid from '@/components/ListingGrid'
 import ListingDetail from '@/components/ListingDetail'
+import AboutPage from '@/components/AboutPage'
+import Footer from '@/components/Footer'
 import { fetchListings, type Listing } from '@/lib/listings'
 
 export default function Page(){
@@ -73,15 +75,13 @@ export default function Page(){
 
       {page==='detail' && selected && <ListingDetail listing={selected}/>}
 
-      {page==='about' && (
-        <div className="pt-28 max-w-7xl mx-auto px-6 pb-20"><h1 className="text-4xl font-bold">About Rent H&U</h1><p className="mt-4 text-gray-600 max-w-2xl">We are a premium rental platform inspired by Spanish villas. Our mission is to make finding your new home simple and luxurious.</p></div>
-      )}
+      {page==='about' && <AboutPage onExplore={()=>setPage('listings')}/>}
 
       {page==='contact' && (
         <div className="pt-28 max-w-7xl mx-auto px-6 pb-20 grid md:grid-cols-2 gap-12"><div><h1 className="text-4xl font-bold">Contact Us</h1><form className="mt-6 space-y-4"><input placeholder="Name" className="w-full border rounded-xl p-3"/><input placeholder="Email" className="w-full border rounded-xl p-3"/><textarea placeholder="Message" className="w-full border rounded-xl p-3 h-32"/><button className="bg-[#0a2540] text-white px-8 py-3 rounded-full">Send</button></form></div><div className="bg-[#f7f9fb] rounded-2xl p-8"><h3 className="font-bold">Visit us</h3><p className="text-sm text-gray-600 mt-2">Andalucía, Spain</p></div></div>
       )}
 
-      <footer className="bg-[#0a2540] text-white py-12 mt-20"><div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-8 text-sm"><div><div className="font-bold text-lg">Rent H&U</div><p className="text-white/60 mt-2">Finding your new home is simple.</p></div><div><div className="font-semibold">Company</div><div className="mt-2 space-y-1 text-white/60"><div>About</div><div>Listings</div></div></div><div><div className="font-semibold">Support</div><div className="mt-2 space-y-1 text-white/60"><div>Contact</div><div>FAQ</div></div></div><div><div className="font-semibold">Newsletter</div><div className="flex mt-2"><input placeholder="Email" className="rounded-l-full px-4 py-2 text-black"/><button className="bg-white text-[#0a2540] px-4 rounded-r-full">→</button></div></div></div></footer>
+      <Footer onNavigate={setPage}/>
     </main>
   )
 }
