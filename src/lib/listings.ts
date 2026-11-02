@@ -16,6 +16,7 @@ export type Listing = {
 const LISTING_COLUMNS = 'id,title,address,city,typology,price,beds,baths,description,imageUrl:image_url'
 
 export async function fetchListings(): Promise<Listing[]> {
+  if (!supabase) throw new Error('Supabase is not configured')
   const { data, error } = await supabase
     .from('listings')
     .select(LISTING_COLUMNS)
